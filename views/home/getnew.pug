@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+  if userType == 'Trial'
+    div
+    | Bạn đang thực hiện quá trình thử giọng cho hệ thống
+    br
+    | Chúng tôi sẽ thu thập 10 câu
+    br
+    | Chúc bạn may mắn
+    hr
+  span Bấm nút để lấy câu mới
+  form(action='/sentence/assign', method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group
+      button#new_sentence.btn.btn-block.btn-primary.btn-lg(type='submit' disabled)
+        i.fa.fa-arrow-circle-o-down
+        | Lấy câu mới
+
+
+

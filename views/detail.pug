@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  h3.text-center Thống kê chi tiết theo ngày trong tháng
+  h5.text-center Tài khoản #{userEmail}
+  div.text-center
+    form(action='', method='POST')
+      input(type='hidden', name='_csrf', value=_csrf)
+      button.btn.btn-info(type='submit', name='decision', value='select') Cập nhật
+  
+  div
+    p Tổng số thời gian hợp lệ: #{total} giây
+    p Tổng số tiền tương ứng (chưa tính % phạt): #{total * 55} VNĐ
+    h5 Chi tiết
+    each day in days
+      h6 #{day.day}
+      p Thời gian đã làm: #{day.totalDuration} giây
+      p Thời gian đã xóa do làm nhầm: #{day.clearedDuration} giây
+      p Thời gian đã xóa do câu lỗi: #{day.trashedDuration} giây
+      p Thời gian đã làm hợp lệ: #{day.validDuration} giây
+      p Thời gian được tính: #{day.validDuration < 3600 ? day.validDuration : 3600} giây

@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  .row
+    .col-md-12
+      .error-template
+        h1
+          | Oái!
+        h2
+          | Có gì đó không đúng (҂⌣̀_⌣́)
+        .error-details
+          | #{message}
+        .error-actions
+          a.btn.btn-primary(href='/')
+            | Quay lại Trang chủ

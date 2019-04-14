@@ -1,0 +1,96 @@
+extends layout
+
+block content
+  script(src='/js/reportbuttons.js')
+  h3.text-center Tổng kết các câu đã đọc
+  h5.text-center Tài khoản #{byUser.email}
+  if viewer.rank == 'Admin'
+    div.text-center
+      form(action='/candidate/update', method='POST')
+        input(type='hidden', name='_csrf', value=_csrf)
+        input(type='hidden', name='candidate', value=byUser.email)
+        button.btn.btn-info(type='submit', name='decision', value='select') Chọn
+        button.btn.btn-danger(type='submit', name='decision', value='discard') Loại
+  div
+    p Tổng thời gian: #{maximumduration} giây
+  div.text-center
+    audio#player(controls)
+  .row
+    .timeline-centered
+      each sentence in sentences
+        article.timeline-entry
+          .timeline-entry-inner
+            button.timeline-icon.bg-primary.p-0.border-0
+              input.d-none(id=sentence._id value=sentence.path)
+              i.fa.fa-play.mr-0
+            .timeline-label
+              h2 #{sentence.text}
+              p #{sentence.updatedAt} (#{sentence.maxDuration}s)
+              .timeline-status.float-right
+                case sentence.status
+                  when 'trash'
+                    p.fa.fa-trash-alt.text-info(title='Đã báo câu lỗi')
+                    p.fa.fa-eraser
+                    p.fa.fa-question-circle(title='Chưa được kiểm tra')
+                  when 'clear'
+                    p.fa.fa-trash-alt
+                    p.fa.fa-eraser.text-info(title='Đã báo câu đọc nhầm')
+                    p.fa.fa-question-circle(title='Chưa được kiểm tra')
+                  when 'approve'
+                    p.fa.fa-trash-alt
+                    p.fa.fa-eraser
+                    p.fa.fa-check.text-info(title='Đã kiểm tra - OK')
+                  when 'ban'
+                    p.fa.fa-trash-alt
+                    p.fa.fa-eraser
+                    p.fa.fa-ban.text-info(title='Đã kiểm tra - Lỗi')
+                  default
+                    if viewer.rank == 'Admin'
+                      p.fa.fa-trash-alt
+                      p.fa.fa-eraser
+                      p.fa.clickable.fa-ban.text-secondary(title='Phạt lỗi' action='ban' target=sentence._id)
+                      p.fa.clickable.fa-check.text-secondary(title='Không có lỗi' action='approve' target=sentence._id)
+                    else
+                      p.fa.clickable.fa-trash-alt.text-secondary(title='Báo câu lỗi' action='trash' target=sentence._id)
+                      p.fa.clickable.fa-eraser.text-secondary(title='Báo câu đọc nhầm' action='clear' target=sentence._id)
+                      p.fa.fa-question-circle(title='Chưa được kiểm tra')
+  if pages > 0
+    nav.text-center
+      ul.pagination
+      if current == 1
+        li.page-item.d-inline
+          a.page-link.d-inline <<
+        li.page-item.d-inline.active
+          a.page-link.d-inline đầu
+      else
+        li.page-item.d-inline
+          a.page-link.d-inline(href='/summary/' + byUser.navigator + '/' + (Number(current) - 1)) <<
+        li.page-item.d-inline
+          a.page-link.d-inline(href='/summary/' + byUser.navigator + '/' + '1') đầu
+      - var i = (current > 5 ? Number(current) - 4 : 1)
+      if (i !== 1)
+        li.page-item.d-inline.disabled
+          a.page-link.d-inline ...
+      while (i <= current + 4) && (i <= pages)
+        if i == current
+          li.page-item.d-inline.active
+            a.page-link.d-inline #{i}
+        else
+          li.page-item.d-inline
+            a.page-link.d-inline(href='/summary/' + byUser.navigator + '/' + i) #{i}
+        if i == Number(current) + 4 && i < pages
+          li.page-item.d-inline.disabled
+            a.page-link.d-inline ...
+        - i++
+      if current == pages
+        li.page-item.d-inline
+          a.page-link.d-inline cuối
+        li.page-item.d-inline
+          a.page-link.d-inline >>
+      else
+        li.page-item.d-inline
+          a.page-link.d-inline(href='/summary/' + byUser.navigator + '/' + pages) cuối
+        li.page-item.d-inline
+          a.page-link.d-inline(href='/summary/' + byUser.navigator + '/' + (Number(current) + 1)) >>
+
+

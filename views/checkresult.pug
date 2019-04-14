@@ -1,0 +1,52 @@
+extends layout
+
+block content
+  script(src='/js/reportbuttons.js')
+  h3.text-center Tổng kết các câu đã kiểm tra
+  h5.text-center Tài khoản #{userEmail}
+  div
+    p Tổng số câu được kiểm tra: #{total} câu
+    p Số câu sai: #{number_of_bans} câu
+    p Số câu đúng: #{number_of_approves} câu
+    p Tỉ lệ sai: #{number_of_bans / total * 100} %
+  div.text-center
+    audio#player(controls)
+  .row
+    .timeline-centered
+      each sentence in sentences
+        article.timeline-entry
+          .timeline-entry-inner
+            button.timeline-icon.bg-primary.p-0.border-0
+              input.d-none(id=sentence._id value=sentence.path)
+              i.fa.fa-play.mr-0
+            .timeline-label
+              h2 #{sentence.text}
+              p #{sentence.updatedAt} (#{sentence.maxDuration}s)
+              .timeline-status.float-right
+                case sentence.status
+                  when 'trash'
+                    p.fa.fa-trash-alt.text-info(title='Đã báo câu lỗi')
+                    p.fa.fa-eraser
+                    p.fa.fa-question-circle(title='Chưa được kiểm tra')
+                  when 'clear'
+                    p.fa.fa-trash-alt
+                    p.fa.fa-eraser.text-info(title='Đã báo câu đọc nhầm')
+                    p.fa.fa-question-circle(title='Chưa được kiểm tra')
+                  when 'approve'
+                    p.fa.fa-trash-alt
+                    p.fa.fa-eraser
+                    p.fa.fa-check.text-info(title='Đã kiểm tra - OK')
+                  when 'ban'
+                    p.fa.fa-trash-alt
+                    p.fa.fa-eraser
+                    p.fa.fa-ban.text-info(title='Đã kiểm tra - Lỗi')
+                  default
+                    if viewer.rank == 'Admin'
+                      p.fa.fa-trash-alt
+                      p.fa.fa-eraser
+                      p.fa.clickable.fa-ban.text-secondary(title='Phạt lỗi' action='ban' target=sentence._id)
+                      p.fa.clickable.fa-check.text-secondary(title='Không có lỗi' action='approve' target=sentence._id)
+                    else
+                      p.fa.clickable.fa-trash-alt.text-secondary(title='Báo câu lỗi' action='trash' target=sentence._id)
+                      p.fa.clickable.fa-eraser.text-secondary(title='Báo câu đọc nhầm' action='clear' target=sentence._id)
+                      p.fa.fa-question-circle(title='Chưa được kiểm tra')

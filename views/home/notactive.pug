@@ -1,0 +1,18 @@
+extends ../layout
+
+block content
+  div.text-center.lead Cám ơn bạn đã đăng kí.
+  div.text-center.lead Xin hãy nhập mã kích hoạt nhận được trong email để kích hoạt tài khoản của bạn.
+
+  hr
+
+  form(action='/account/activate', method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group.row
+      label.col-md-3.col-form-label.font-weight-bold.text-right(for='activation_code') Mã kích hoạt
+      .col-md-7
+        input.form-control(type='activation_code', name='activation_code', id='activation_code')
+    .form-group
+      .offset-sm-3.col-md-7.pl-2
+        button.btn.btn.btn-primary(type='submit') Kích hoạt tài khoản
+
