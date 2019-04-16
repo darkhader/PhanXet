@@ -3,6 +3,7 @@
  * Home page.
  */
 const Sentence = require('../models/Sentence');
+const SentenceText = require('../models/SentenceText');
 const crypto = require('crypto');
 exports.index = (req, res, next) => {
   if (!req.user) {
@@ -43,7 +44,36 @@ exports.index = (req, res, next) => {
             });
           }
         });
-      } else {
+      }
+
+
+      //hien thi trang danh gia van ban
+      if (req.user.currentSentenceText) {
+        SentenceText.findById(req.user.currentSentenceText, (err, s) => {
+          if (err) {
+            res.render('error', {
+              title: 'Lỗi',
+              message: err
+            });
+          }
+       
+          
+          if (s) {
+            res.render('home/mainText' , {
+              title: 'Trang chủ',
+              sentenceText: s,
+              fileName: crypto.createHash('md5').update(s._id.toString() + process.env.UPLOAD_SALT).digest('hex')
+            });
+          } 
+          else {
+            res.render('home/getnew', {
+              title: 'Trang chủ',
+              userType: req.user.rank
+            });
+          }
+        });
+      }
+      else {
         res.render('home/getnew', {
           title: 'Trang chủ',
           userType: req.user.rank

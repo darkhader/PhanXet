@@ -72,6 +72,7 @@ $(document).ready(() => {
       if (data.error) {
         $('#upload-failed').removeClass('d-none');
         newSentenceButton.prop('disabled', false);
+        
         universalButton.prop('disabled', false);
         discardButton.prop('disabled', false);
         uploadButton.prop('disabled', false);
@@ -108,6 +109,8 @@ $(document).ready(() => {
   newlyRecorded = true;
   universalButton.prop('disabled', false);
   newSentenceButton.prop('disabled', false);
+
+  
 });
 
 function playerUpdate() {

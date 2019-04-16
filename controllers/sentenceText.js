@@ -40,15 +40,34 @@ exports.createSentenceText = (req, res) => {
 };
 
 //lay sentecentext
+
 exports.getSentenceText = async (req, res, next) => {
     
 
-    if (true) {
+    if (req.user) {
         SentenceText.count({}, (err, count) => {
             let randomIndex = Math.floor(Math.random() * count);
-              SentenceText.findOne({}, null, { skip: randomIndex }, (err, sentenceTextFound) => {
+              SentenceText.findOne({}, null, { skip: randomIndex }, async (err, sentenceTextFound) => {
                 if (err) console.log(err)
-                else res.send(sentenceTextFound);
+                else 
+            {
+               
+            req.user.currentSentenceText =  await  sentenceTextFound._id;
+            console.log("req user currentsetxt", req.user.currentSentenceText)
+                req.user.save((err) => {
+                    if (err) {
+                        res.render('error', {
+                            title: 'Lỗi',
+                            message: err
+                        })
+                    }
+                    
+                })
+               
+            res.redirect('/');
+            
+            }
+                
             })
         })
 
@@ -62,10 +81,12 @@ exports.getSentenceText = async (req, res, next) => {
 exports.judgeSentenceText = async (req, res, next) => {
     const {sentenceTextId} = req.params;
     // if (req.user) {
+        console.log("l",sentenceTextId);
+        
         if(true){
 try {
     const sentenceText = await SentenceText.findByIdAndUpdate(sentenceTextId);
-    // const UserSenteceText = await sentenceText.userID.some( element => element === req.user_id);
+    // const UserSenteceText = await sentenceText.userID.some( element => element === req.user._id);
     // if(UserSenteceText){
     //     res.render('error', {
     //                      title: 'Lỗi',
@@ -81,25 +102,25 @@ try {
                         sentenceText.updatedAt = new Date();
                         // sentenceText.userId.push(req.user_id);
                         // req.user.statistics.number_of_sentenceTexts += 1;
-                        let sentenceTextUpDated = await sentenceText.save();
-                        res.json({ success: 1, sentenceText: sentenceTextUpDated });
-                        // sentenceText.save((err) => {
-                        //     if (err) {
-                        //         res.render('error', {
-                        //             title: 'Lỗi',
-                        //             message: err
-                        //         })
-                        //     }
-                        // });
-                            // req.user.save((err) => {
-                            //     if (err) {
-                            //         res.render('error', {
-                            //             title: 'Lỗi',
-                            //             message: err
-                            //         })
-                            //     }
-                            //     res.redirect('/');
-                            // })
+                      
+                      //console.log("id", sentenceText._id)
+                        sentenceText.save((err) => {
+                            if (err) {
+                                res.render('error', {
+                                    title: 'Lỗi',
+                                    message: err
+                                })
+                            }
+                        });
+                            req.user.save((err) => {
+                                if (err) {
+                                    res.render('error', {
+                                        title: 'Lỗi',
+                                        message: err
+                                    })
+                                }
+                                res.redirect('/');
+                            })
                         
  //                   } 
                
@@ -119,59 +140,11 @@ try {
          }
 }
  
-
-exports.removeSentenceText = (req, res, next) => {
-    if (req.user) {
-        if (!req.user.currentSentenceText) {
-            res.render('error', {
-                message: "Có câu nào đâu mà bỏ? Quay lại đi."
-            });
-        } else {
-            SentenceText.findById(req.user.currentSentenceText, (err, s) => {
-                if (err) {
-                    res.render('error', {
-                        title: 'Lỗi',
-                        message: err
-                    })
-                }
-                req.user.currentSentenceText = undefined;
-                req.user.statistics.number_of_sentenceTexts -= 1;
-           
-                s.owner_info.userID = undefined;
-                s.owner_info.accent = undefined;
-                s.owner_info.gender = undefined;
-                s.year_of_birth = undefined;
-                s.userID = null;
-                s.updatedAt = new Date();
-                s.save((err) => {
-                    if (err) {
-                        res.render('error', {
-                            title: 'Lỗi',
-                            message: err
-                        })
-                    }
-                    req.user.save((err) => {
-                        if (err) {
-                            res.render('error', {
-                                title: 'Lỗi',
-                                message: err
-                            })
-                        }
-                        res.redirect("/");
-                    })
-                })
-            })
-        }
-    } else {
-        res.redirect("/login");
-    }
-}
-
 exports.report = (req, res, next) => {
+    const {sentenceTextId} = req.params;
     if (req.user) {
-        var action = req.params.action;
-        var target = req.params.target;
-        SentenceText.findById(target, (err, s) => {
+       
+        SentenceText.findById(sentenceTextId, (err, s) => {
             if (err) {
                 res.json({
                     error: true
@@ -230,6 +203,54 @@ exports.report = (req, res, next) => {
         });
     }
 }
+// exports.removeSentenceText = (req, res, next) => {
+//     if (req.user) {
+//         if (!req.user.currentSentenceText) {
+//             res.render('error', {
+//                 message: "Có câu nào đâu mà bỏ? Quay lại đi."
+//             });
+//         } else {
+//             SentenceText.findById(req.user.currentSentenceText, (err, s) => {
+//                 if (err) {
+//                     res.render('error', {
+//                         title: 'Lỗi',
+//                         message: err
+//                     })
+//                 }
+//                 req.user.currentSentenceText = undefined;
+//                 req.user.statistics.number_of_sentenceTexts -= 1;
+           
+//                 s.owner_info.userID = undefined;
+//                 s.owner_info.accent = undefined;
+//                 s.owner_info.gender = undefined;
+//                 s.year_of_birth = undefined;
+//                 s.userID = null;
+//                 s.updatedAt = new Date();
+//                 s.save((err) => {
+//                     if (err) {
+//                         res.render('error', {
+//                             title: 'Lỗi',
+//                             message: err
+//                         })
+//                     }
+//                     req.user.save((err) => {
+//                         if (err) {
+//                             res.render('error', {
+//                                 title: 'Lỗi',
+//                                 message: err
+//                             })
+//                         }
+//                         res.redirect("/");
+//                     })
+//                 })
+//             })
+//         }
+//     } else {
+//         res.redirect("/login");
+//     }
+// }
+
+
 // exports.summary = (req, res, next) => {
 //     function collectData(matchCondition) {
 //         SentenceText.aggregate().match(matchCondition).sort({

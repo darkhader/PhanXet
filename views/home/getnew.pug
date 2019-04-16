@@ -17,5 +17,21 @@ block content
         i.fa.fa-arrow-circle-o-down
         | Lấy câu mới
 
+  div
+    | Bạn đang thực hiện quá trình đánh giá văn bản cho hệ thống
+    br
+    | Chúng tôi sẽ thu thập 10 đánh giá
+    br
+    | Chúc bạn may mắn
+    hr
+  span Bấm nút để lấy câu mới
+  form(action='/sentenceText/randomText', method='GET')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group
+      button#new_sentenceText.btn.btn-block.btn-primary.btn-lg(type='submit' )
+        i.fa.fa-arrow-circle-o-down
+        | Lấy câu mới
 
+  
+  
 
