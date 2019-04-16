@@ -10,50 +10,108 @@ var mongoose = require('mongoose');
 //tao sentenceText
 exports.createSentenceText = (req, res) => {
     //   if (req.query && req.query.password == insertPassword) {
-        if (true) {
+    if (true) {
         // var lineReader = require('readline').createInterface({
         //   input: require('fs').createReadStream('/starter/data_renormText.txt')
         // });
-      
+
         // lineReader.on('line', function(line) {
-          var sentenceText = new SentenceText({
+        var sentenceText = new SentenceText({
             text: req.body.text,
-        
+
             createdAt: new Date()
-          });
-         
-          sentenceText.save((err) => {
-            if (err) {
-              res.render('error', {
-                title: 'Lỗi',
-                mesage: err
-              })
-            }
-          });
-        // });
-      } else {
-        res.render('error', {
-          title: 'Lỗi',
-          message: "Không dễ thế đâu, hơ hơ!"
         });
-      }
+
+        sentenceText.save((err) => {
+            if (err) {
+                res.render('error', {
+                    title: 'Lỗi',
+                    mesage: err
+                })
+            }
+        });
+        // });
+    } else {
+        res.render('error', {
+            title: 'Lỗi',
+            message: "Không dễ thế đâu, hơ hơ!"
+        });
+    }
 };
 
 //lay sentecentext
 
 exports.getSentenceText = async (req, res, next) => {
-    
+
 
     if (req.user) {
         SentenceText.count({}, (err, count) => {
             let randomIndex = Math.floor(Math.random() * count);
-              SentenceText.findOne({}, null, { skip: randomIndex }, async (err, sentenceTextFound) => {
+            SentenceText.findOne({}, null, { skip: randomIndex }, async (err, sentenceTextFound) => {
                 if (err) console.log(err)
-                else 
-            {
-               
-            req.user.currentSentenceText =  await  sentenceTextFound._id;
-            console.log("req user currentsetxt", req.user.currentSentenceText)
+                else {
+
+                    req.user.currentSentenceText = await sentenceTextFound._id;
+
+                    req.user.save((err) => {
+                        if (err) {
+                            res.render('error', {
+                                title: 'Lỗi',
+                                message: err
+                            })
+                        }
+
+                    })
+
+                    res.redirect('/sentenceText/randomText/' + req.user.currentSentenceText);
+
+                }
+
+            })
+        })
+
+
+
+    } else {
+        res.redirect("/login");
+    }
+}
+
+//danh gia sentencetext 
+exports.judgeSentenceText = async (req, res, next) => {
+    const { sentenceTextId } = req.params;
+    const { answer } = req.body;
+    if (req.user) {
+
+
+
+        try {
+            const sentenceText = await SentenceText.findByIdAndUpdate(sentenceTextId);
+            const UserSenteceText = await sentenceText.userID.some(element => element === req.user.email);
+            if (UserSenteceText) {
+                console.log("chay");
+
+                  res.render('error', {
+                    title: 'Lỗi',
+                    message: "Bạn đã phán xét rồi"
+                } 
+              );
+            }
+            else {
+                sentenceText.picks += 1;
+                sentenceText[answer] += 1;
+                sentenceText.updatedAt = new Date();
+                sentenceText.userID.push(req.user.email);
+                req.user.statistics.number_of_sentenceTexts += 1;
+
+                sentenceText.save((err) => {
+                    if (err) {
+                        res.render('error', {
+                            title: 'Lỗi',
+                            message: err
+                        })
+                    }
+                });
                 req.user.save((err) => {
                     if (err) {
                         res.render('error', {
@@ -61,194 +119,82 @@ exports.getSentenceText = async (req, res, next) => {
                             message: err
                         })
                     }
-                    
+                    res.redirect('/');
                 })
-               
-            res.redirect('/');
-            
-            }
-                
-            })
-        })
 
-         
-      
-    } else {
+
+            }
+
+        } catch (error) {
+
+
+
+            res.render('error', {
+                title: 'Lỗi',
+                message: error
+            });
+
+
+        }
+    }
+    else {
         res.redirect("/login");
     }
 }
-//danh gia sentencetext 
-exports.judgeSentenceText = async (req, res, next) => {
-    const {sentenceTextId} = req.params;
-    // if (req.user) {
-        console.log("l",sentenceTextId);
-        
-        if(true){
-try {
-    const sentenceText = await SentenceText.findByIdAndUpdate(sentenceTextId);
-    // const UserSenteceText = await sentenceText.userID.some( element => element === req.user._id);
-    // if(UserSenteceText){
-    //     res.render('error', {
-    //                      title: 'Lỗi',
-    //                      message: "Bạn đã phán xét rồi"
-    //                });
-    // }
-    // else {
-       
-                      sentenceText.picks += 1;
-                  
-                       
-                        sentenceText.yes += 1;
-                        sentenceText.updatedAt = new Date();
-                        // sentenceText.userId.push(req.user_id);
-                        // req.user.statistics.number_of_sentenceTexts += 1;
-                      
-                      //console.log("id", sentenceText._id)
-                        sentenceText.save((err) => {
-                            if (err) {
-                                res.render('error', {
-                                    title: 'Lỗi',
-                                    message: err
-                                })
-                            }
-                        });
-                            req.user.save((err) => {
-                                if (err) {
-                                    res.render('error', {
-                                        title: 'Lỗi',
-                                        message: err
-                                    })
-                                }
-                                res.redirect('/');
-                            })
-                        
- //                   } 
-               
-                  
-} catch (error) {
-    
-        res.render('error', {
-            title: 'Lỗi',
-            message:error
-        });
-    
-    
-}
-    }
-    else {
-             res.redirect("/login");
-         }
-}
- 
+
 exports.report = (req, res, next) => {
-    const {sentenceTextId} = req.params;
+    const { sentenceTextId } = req.params;
     if (req.user) {
-       
-        SentenceText.findById(sentenceTextId, (err, s) => {
-            if (err) {
-                res.json({
-                    error: true
-                });
-            } else {
-                var author = s.userID;
-                if (s.status) {
-                    res.json({
-                        error: true
-                    });
-                    return;
-                }
-                if (req.user.rank == "Worker" || req.user.rank == "Trial") {
-                    if (action != "trash" && action != "clear") {
-                        res.json({
-                            error: true
-                        });
-                        return;
-                    }
-                    if (req.user._id != author) {
-                        res.json({
-                            error: true
-                        });
-                        return;
-                    }
-                } else if (req.user.rank == "Admin") {
-                    if (action != "ban" && action != "approve") {
-                        res.json({
-                            error: true
-                        });
-                        return;
-                    }
-                } else {
-                    res.json({
-                        error: true
-                    });
-                    return;
-                }
-                s.status = action;
-                s.save((err) => {
-                    if (err) {
-                        res.json({
-                            error: true
-                        });
-                    } else {
-                        res.json({
-                            success: true
-                        });
-                    }
-                })
-            }
-        })
+
     } else {
         res.json({
             error: true
         });
     }
 }
-// exports.removeSentenceText = (req, res, next) => {
-//     if (req.user) {
-//         if (!req.user.currentSentenceText) {
-//             res.render('error', {
-//                 message: "Có câu nào đâu mà bỏ? Quay lại đi."
-//             });
-//         } else {
-//             SentenceText.findById(req.user.currentSentenceText, (err, s) => {
-//                 if (err) {
-//                     res.render('error', {
-//                         title: 'Lỗi',
-//                         message: err
-//                     })
-//                 }
-//                 req.user.currentSentenceText = undefined;
-//                 req.user.statistics.number_of_sentenceTexts -= 1;
-           
-//                 s.owner_info.userID = undefined;
-//                 s.owner_info.accent = undefined;
-//                 s.owner_info.gender = undefined;
-//                 s.year_of_birth = undefined;
-//                 s.userID = null;
-//                 s.updatedAt = new Date();
-//                 s.save((err) => {
-//                     if (err) {
-//                         res.render('error', {
-//                             title: 'Lỗi',
-//                             message: err
-//                         })
-//                     }
-//                     req.user.save((err) => {
-//                         if (err) {
-//                             res.render('error', {
-//                                 title: 'Lỗi',
-//                                 message: err
-//                             })
-//                         }
-//                         res.redirect("/");
-//                     })
-//                 })
-//             })
-//         }
-//     } else {
-//         res.redirect("/login");
-//     }
-// }
+exports.removeSentenceText = (req, res, next) => {
+    if (req.user) {
+        if (!req.user.currentSentenceText) {
+            res.render('error', {
+                message: "Có câu nào đâu mà bỏ? Quay lại đi."
+            });
+        } else {
+            SentenceText.findById(req.user.currentSentenceText, (err, s) => {
+                if (err) {
+                    res.render('error', {
+                        title: 'Lỗi',
+                        message: err
+                    })
+                }
+                req.user.currentSentenceText = undefined;
+                req.user.statistics.number_of_sentenceTexts -= 1;
+
+
+
+                s.updatedAt = new Date();
+                s.save((err) => {
+                    if (err) {
+                        res.render('error', {
+                            title: 'Lỗi',
+                            message: err
+                        })
+                    }
+                    req.user.save((err) => {
+                        if (err) {
+                            res.render('error', {
+                                title: 'Lỗi',
+                                message: err
+                            })
+                        }
+                        res.redirect("/");
+                    })
+                })
+            })
+        }
+    } else {
+        res.redirect("/login");
+    }
+}
 
 
 // exports.summary = (req, res, next) => {

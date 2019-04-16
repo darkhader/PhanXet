@@ -109,7 +109,7 @@ $(document).ready(() => {
   newlyRecorded = true;
   universalButton.prop('disabled', false);
   newSentenceButton.prop('disabled', false);
-
+  
   
 });
 
