@@ -40,7 +40,50 @@ exports.createSentenceText = (req, res) => {
 };
 
 //lay sentecentext
+exports.get10SentenceText = async (req, res, next) => {
 
+
+    if (true) {
+       
+            
+         const  sentenceTextFound = await SentenceText.find({userID : null}).limit(10); 
+                
+              
+
+                    
+                  
+                    sentenceTextFound.map(SentenceText => (
+                        console.log(SentenceText.text)
+                        
+                        ));
+
+                    // req.user.save((err) => {
+                    //     if (err) {
+                    //         res.render('error', {
+                    //             title: 'Lỗi',
+                    //             message: err
+                    //         })
+                    //     }
+
+                    // })
+
+                    res.render('home/mainText10' , {
+                        title: 'Trang chủ',
+                        TenCurrentSentenceText: SentenceText,
+                        
+                      })
+
+                
+                      
+            
+   
+
+
+
+    } else {
+        // res.redirect("/login");
+    }
+}
 exports.getSentenceText = async (req, res, next) => {
 
 
@@ -142,14 +185,13 @@ exports.judgeSentenceText = async (req, res, next) => {
     }
 }
 
-exports.report = (req, res, next) => {
+exports.report = async (req, res, next) => {
     const { sentenceTextId } = req.params;
     if (req.user) {
-
+        const sentenceText = await SentenceText.findByIdAndUpdate(sentenceTextId);
+        
     } else {
-        res.json({
-            error: true
-        });
+        res.redirect("/login");
     }
 }
 exports.removeSentenceText = (req, res, next) => {

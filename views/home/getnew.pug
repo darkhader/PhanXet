@@ -25,7 +25,7 @@ block content
     | Chúc bạn may mắn
     hr
   span Bấm nút để lấy câu mới
-  form(action='/sentenceText/randomText', method='GET')
+  form(action='/sentenceText/get', method='GET')
     input(type='hidden', name='_csrf', value=_csrf)
     .form-group
       button#new_sentenceText.btn.btn-block.btn-primary.btn-lg(type='submit' )
