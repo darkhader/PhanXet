@@ -1,6 +1,10 @@
 extends ../layout    
 block content
-    
-    div 10 cau  
-    h2 #{TenCurrentSentenceText.map}
+  
+  
+    div.row.text-center.mt-5 #{TenCurrentSentenceText.length} cau
+       div.col-md-3  
+       each sentence, i in TenCurrentSentenceText
+        
+        Button.get_Text(data-textId=TenCurrentSentenceText[i]._id) Cau #{ i+1}
         

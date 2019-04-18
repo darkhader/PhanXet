@@ -43,7 +43,7 @@ exports.createSentenceText = (req, res) => {
 exports.get10SentenceText = async (req, res, next) => {
 
 
-    if (true) {
+    if (req.user) {
        
             
          const  sentenceTextFound = await SentenceText.find({userID : null}).limit(10); 
@@ -52,49 +52,23 @@ exports.get10SentenceText = async (req, res, next) => {
 
                     
                   
-                    sentenceTextFound.map(SentenceText => (
-                        console.log(SentenceText.text)
-                        
-                        ));
+         sentenceTextFound.map(text => (
 
-                    // req.user.save((err) => {
-                    //     if (err) {
-                    //         res.render('error', {
-                    //             title: 'Lỗi',
-                    //             message: err
-                    //         })
-                    //     }
-
-                    // })
-
-                    res.render('home/mainText10' , {
-                        title: 'Trang chủ',
-                        TenCurrentSentenceText: SentenceText,
-                        
-                      })
-
-                
-                      
+         
             
-   
+            
+            text.userID = req.user._id,
+            text.save((err) => {
+                if (err) {
+                    res.render('error', {
+                        title: 'Lỗi',
+                        message: err
+                    })
+                }
 
-
-
-    } else {
-        // res.redirect("/login");
-    }
-}
-exports.getSentenceText = async (req, res, next) => {
-
-
-    if (req.user) {
-        SentenceText.count({}, (err, count) => {
-            let randomIndex = Math.floor(Math.random() * count);
-            SentenceText.findOne({}, null, { skip: randomIndex }, async (err, sentenceTextFound) => {
-                if (err) console.log(err)
-                else {
-
-                    req.user.currentSentenceText = await sentenceTextFound._id;
+            }) 
+         ))
+                        
 
                     req.user.save((err) => {
                         if (err) {
@@ -106,12 +80,16 @@ exports.getSentenceText = async (req, res, next) => {
 
                     })
 
-                    res.redirect('/sentenceText/randomText/' + req.user.currentSentenceText);
-
-                }
-
-            })
-        })
+                    res.render('home/mainText10' , {
+                        title: 'Danh gia',
+                        TenCurrentSentenceText: sentenceTextFound
+                        
+                      })
+                  
+                
+                      
+            
+   
 
 
 
@@ -119,19 +97,58 @@ exports.getSentenceText = async (req, res, next) => {
         res.redirect("/login");
     }
 }
+exports.getSentenceText = async (req, res, next) => {
+    const { sentenceTextId } = req.params;
 
+    if (req.user) {
+        
+            
+        const  sentenceTextFound= await  SentenceText.findById(sentenceTextId)
+      
+        res.render('home/text' , {
+            title: 'chi tiet',
+            SentenceText: sentenceTextFound
+            
+          })
+
+
+    } else {
+        res.redirect("/login");
+    }
+}
+exports.removeUserSentenceText = async (req, res, next) => {
+    const s = await SentenceText.find({});
+    s.map( s => (
+        
+        
+        s.userID = null,
+        s.save((err) => {
+            if (err) {
+                res.render('error', {
+                    title: 'Lỗi',
+                    message: err
+                })
+            }
+
+        }) 
+    ))
+    
+}
 //danh gia sentencetext 
 exports.judgeSentenceText = async (req, res, next) => {
     const { sentenceTextId } = req.params;
     const { answer } = req.body;
+   
+    
     if (req.user) {
 
 
 
         try {
             const sentenceText = await SentenceText.findByIdAndUpdate(sentenceTextId);
-            const UserSenteceText = await sentenceText.userID.some(element => element === req.user.email);
-            if (UserSenteceText) {
+           
+           
+            if (req.user._id.toString() === sentenceText.userChoose) {
                 console.log("chay");
 
                   res.render('error', {
@@ -144,7 +161,7 @@ exports.judgeSentenceText = async (req, res, next) => {
                 sentenceText.picks += 1;
                 sentenceText[answer] += 1;
                 sentenceText.updatedAt = new Date();
-                sentenceText.userID.push(req.user.email);
+                sentenceText.userChoose= req.user._id.toString();
                 req.user.statistics.number_of_sentenceTexts += 1;
 
                 sentenceText.save((err) => {

@@ -5,6 +5,7 @@ const sentenceTextSchema = new mongoose.Schema({
   // detected_point: Number,
   // pathText: String,
   userID: {type:String, default:null},
+  userChoose: {type:String, default:null},
   yes:{type:Number, default:0},
   no:{type:Number, default:0},
   picks: {

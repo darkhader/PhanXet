@@ -1,4 +1,3 @@
-var newSentenceTextButton;
 const params = new URL(window.location.href).pathname.split("/");
 const sentenceTextId = params[params.length - 1];
 
@@ -12,28 +11,37 @@ $(document).ready(() => {
 	});
 	
 	
-	$('.answer_btn').click(function() {
+	$('.get_Text').click(function() {
+		console.log("textId", $(this).data().textid);
 		
-		$.ajax({
-			url: "/sentenceText/judge/"+sentenceTextId ,
-			type: "PUT",
-			data: $(this).data(),
-			success: function(response) {
-				if(response) {
-				console.log(response);
-				document.write(response);
- 
+	
+        window.location.href = "/sentenceText/getText/"+$(this).data().textid;
 				
-				}
-			},
-			error: function(err) {
-				console.log(err);
+	
+});
+$('#comeBack').click(function() {
+
+	history.back();
+
+});
+$('.answer_btn').click(function() {
+console.log(sentenceTextId);
+
+	$.ajax({
+		url: "/sentenceText/judge/"+sentenceTextId ,
+		type: "PUT",
+		data: $(this).data(),
+		success: function(response) {
+			if(response) {
+			console.log(response);
+			document.write(response);
+
+			
 			}
-		});
+		},
+		error: function(err) {
+			console.log(err);
+		}
 	});
 });
-function judgeQuestion() {
-	
-	
-	
-}
+});
