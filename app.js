@@ -274,9 +274,11 @@ app.get('/sentence/report/:action/:target', sentenceController.report);
 app.post('/sentenceText/create', sentenceTextController.createSentenceText);
 app.get('/sentenceText/getText/:sentenceTextId', sentenceTextController.getSentenceText);
 app.get('/sentenceText/get', sentenceTextController.get10SentenceText);
+app.get('/sentenceText/get/:sentenceTextId', sentenceTextController.getOneSentenceText);
 app.get('/sentenceText/randomText/:sentenceTextId', homeController.textIndex);
 app.post('/sentenceText/remove', sentenceTextController.removeSentenceText);
 app.put('/sentenceText/judge/:sentenceTextId', sentenceTextController.judgeSentenceText);
+app.put('/sentenceText/report/:sentenceTextId', sentenceTextController.report);
 app.get('/sentenceText/remove', sentenceTextController.removeUserSentenceText);
 
 //app.post('/sentenceText/remove', sentenceTextController.removeSentenceText);

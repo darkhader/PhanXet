@@ -6,6 +6,7 @@ const sentenceTextSchema = new mongoose.Schema({
   // pathText: String,
   userID: {type:String, default:null},
   userChoose: {type:String, default:null},
+  userReport: [{type:String, default:null}],
   yes:{type:Number, default:0},
   no:{type:Number, default:0},
   picks: {

@@ -116,11 +116,26 @@ exports.getSentenceText = async (req, res, next) => {
         res.redirect("/login");
     }
 }
+exports.getOneSentenceText = async (req, res, next) => {
+    const { sentenceTextId } = req.params;
+
+    if (req.user) {
+        
+            
+        const  sentenceTextFound= await  SentenceText.findById(sentenceTextId);
+      
+        res.json(sentenceTextFound);
+
+
+    } else {
+        res.redirect("/login");
+    }
+}
 exports.removeUserSentenceText = async (req, res, next) => {
     const s = await SentenceText.find({});
     s.map( s => (
         
-        
+        s.userChoose=null,
         s.userID = null,
         s.save((err) => {
             if (err) {
@@ -149,13 +164,8 @@ exports.judgeSentenceText = async (req, res, next) => {
            
            
             if (req.user._id.toString() === sentenceText.userChoose) {
-                console.log("chay");
-
-                  res.render('error', {
-                    title: 'Lỗi',
-                    message: "Bạn đã phán xét rồi"
-                } 
-              );
+              
+               return;
             }
             else {
                 sentenceText.picks += 1;
@@ -205,7 +215,19 @@ exports.judgeSentenceText = async (req, res, next) => {
 exports.report = async (req, res, next) => {
     const { sentenceTextId } = req.params;
     if (req.user) {
+
         const sentenceText = await SentenceText.findByIdAndUpdate(sentenceTextId);
+        sentenceText.userReport.push(req.user._id.toString())  ;
+       
+        
+        sentenceText.save((err) => {
+            if (err) {
+                res.render('error', {
+                    title: 'Lỗi',
+                    message: err
+                })
+            }
+        });
         
     } else {
         res.redirect("/login");

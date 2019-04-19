@@ -6,12 +6,50 @@ block content
  h2.text-center #{SentenceText.text}
  br 
  div.row.text-center.mt-5
-  div.col-md-6
-   button.answer_btn.btn-block.btn-danger.btn-lg(data-textid={id} data-answer="no")   Tiêu cực
-  div.col-md-6
-   button.answer_btn.btn-block.btn-success.btn-lg(data-textid={id} data-answer="yes") Tích cực
+  //- div.col-md-6
+  //-  button.answer_btn.btn-block.btn-danger.btn-lg(data-textid={id} data-answer="no" data-toggle='modal', data-target='#myModal')   Tiêu cực
+  //- div.col-md-6
+  //-  button.answer_btn.btn-block.btn-success.btn-lg(data-textid={id} data-answer="yes"  data-toggle='modal' data-target='#myModal') Tích cực
+ select#mySelect
+  option(value='#') 
+  option(data-textid={id} data-answer="yes") Tích cực
+  option(data-textid={id} data-answer="no" ) Tiêu cực
+
  div.mt-5.d-flex.justify-content-center  
   
-      button#comeBack.btn.btn-block.btn-primary.btn-lg
+      button#comeBack.btn.btn-primary
         i.fa.fa-arrow-circle-o-down
         | Quay lại
+      button#report.btn.btn-warning(data-toggle='modal' data-target='#reportModal')
+        | Report
+ #myModal.modal.fade(role='dialog')
+  .modal-dialog 
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal') ×
+        h4.modal-title Thông báo
+      .modal-body
+        p Cảm ơn bạn đã phán xét
+      .modal-footer
+        button.btn.btn-default(type='button', data-dismiss='modal') Close
+ #reportModal.modal.fade(role='dialog')
+  .modal-dialog 
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal') ×
+        h4.modal-title Thông báo
+      .modal-body
+        p Cảm ơn bạn đã báo cáo
+      .modal-footer
+        button.btn.btn-default(type='button', data-dismiss='modal') Close   
+ #myErrorModal.modal.fade(role='dialog')
+  .modal-dialog 
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal') ×
+        h4.modal-title Thông báo
+      .modal-body
+        p Xin lỗi bạn đã phán xét
+      .modal-footer
+        button.btn.btn-default(type='button', data-dismiss='modal') Close
+  
