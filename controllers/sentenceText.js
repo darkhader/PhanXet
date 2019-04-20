@@ -44,19 +44,19 @@ exports.get10SentenceText = async (req, res, next) => {
 
 
     if (req.user) {
-       
-            
-         const  sentenceTextFound = await SentenceText.find({userID : null}).limit(10); 
-                
-              
 
-                    
-                  
-         sentenceTextFound.map(text => (
 
-         
-            
-            
+        const sentenceTextFound = await SentenceText.find({ userID: null }).limit(10);
+
+
+
+
+
+        sentenceTextFound.map(text => (
+
+
+
+
             text.userID = req.user._id,
             text.save((err) => {
                 if (err) {
@@ -66,64 +66,47 @@ exports.get10SentenceText = async (req, res, next) => {
                     })
                 }
 
-            }) 
-         ))
-                        
+            })
+        ))
 
-                    req.user.save((err) => {
-                        if (err) {
-                            res.render('error', {
-                                title: 'Lỗi',
-                                message: err
-                            })
-                        }
 
-                    })
+        req.user.save((err) => {
+            if (err) {
+                res.render('error', {
+                    title: 'Lỗi',
+                    message: err
+                })
+            }
 
-                    res.render('home/mainText10' , {
-                        title: 'Danh gia',
-                        TenCurrentSentenceText: sentenceTextFound
-                        
-                      })
-                  
-                
-                      
-            
-   
+        })
+
+        res.render('home/mainText10', {
+            title: 'Danh gia',
+            TenCurrentSentenceText: sentenceTextFound
+
+        })
 
 
 
-    } else {
-        res.redirect("/login");
-    }
-}
-exports.getSentenceText = async (req, res, next) => {
-    const { sentenceTextId } = req.params;
 
-    if (req.user) {
-        
-            
-        const  sentenceTextFound= await  SentenceText.findById(sentenceTextId)
-      
-        res.render('home/text' , {
-            title: 'chi tiet',
-            SentenceText: sentenceTextFound
-            
-          })
+
+
 
 
     } else {
         res.redirect("/login");
     }
 }
+
 exports.getOneSentenceText = async (req, res, next) => {
-    const { sentenceTextId } = req.params;
+    const { textid } = req.body;
+  
 
     if (req.user) {
-        
-            
-        const  sentenceTextFound= await  SentenceText.findById(sentenceTextId);
-      
+
+
+        const sentenceTextFound = await SentenceText.findById(textid);
+
         res.json(sentenceTextFound);
 
 
@@ -133,9 +116,9 @@ exports.getOneSentenceText = async (req, res, next) => {
 }
 exports.removeUserSentenceText = async (req, res, next) => {
     const s = await SentenceText.find({});
-    s.map( s => (
-        
-        s.userChoose=null,
+    s.map(s => (
+
+        s.userChoose = null,
         s.userID = null,
         s.save((err) => {
             if (err) {
@@ -145,33 +128,34 @@ exports.removeUserSentenceText = async (req, res, next) => {
                 })
             }
 
-        }) 
+        })
     ))
-    
+
 }
 //danh gia sentencetext 
 exports.judgeSentenceText = async (req, res, next) => {
-    const { sentenceTextId } = req.params;
+    const { textid } = req.body;
     const { answer } = req.body;
-   
+
     
+
     if (req.user) {
 
 
 
         try {
-            const sentenceText = await SentenceText.findByIdAndUpdate(sentenceTextId);
-           
-           
+            const sentenceText = await SentenceText.findByIdAndUpdate(textid);
+
+
             if (req.user._id.toString() === sentenceText.userChoose) {
-              
-               return;
+
+                return;
             }
             else {
                 sentenceText.picks += 1;
                 sentenceText[answer] += 1;
                 sentenceText.updatedAt = new Date();
-                sentenceText.userChoose= req.user._id.toString();
+                sentenceText.userChoose = req.user._id.toString();
                 req.user.statistics.number_of_sentenceTexts += 1;
 
                 sentenceText.save((err) => {
@@ -181,6 +165,7 @@ exports.judgeSentenceText = async (req, res, next) => {
                             message: err
                         })
                     }
+                    res.json(sentenceText)
                 });
                 req.user.save((err) => {
                     if (err) {
@@ -189,9 +174,9 @@ exports.judgeSentenceText = async (req, res, next) => {
                             message: err
                         })
                     }
-                    res.redirect('/');
+                    
                 })
-
+                
 
             }
 
@@ -213,13 +198,13 @@ exports.judgeSentenceText = async (req, res, next) => {
 }
 
 exports.report = async (req, res, next) => {
-    const { sentenceTextId } = req.params;
+    const { textid } = req.body;
     if (req.user) {
 
-        const sentenceText = await SentenceText.findByIdAndUpdate(sentenceTextId);
-        sentenceText.userReport.push(req.user._id.toString())  ;
-       
-        
+        const sentenceText = await SentenceText.findByIdAndUpdate(textid);
+        sentenceText.userReport.push(req.user._id.toString());
+
+
         sentenceText.save((err) => {
             if (err) {
                 res.render('error', {
@@ -228,7 +213,7 @@ exports.report = async (req, res, next) => {
                 })
             }
         });
-        
+
     } else {
         res.redirect("/login");
     }

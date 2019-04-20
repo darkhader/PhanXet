@@ -1,41 +1,26 @@
-const params = new URL(window.location.href).pathname.split("/");
-const sentenceTextId = params[params.length - 1];
-
-
-
 $(document).ready(() => {
 	$.ajaxSetup({
 	  headers: {
 		'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 	  }
 	});
-	
-	
-	$('.get_Text').click(function() {
-		console.log("textId", $(this).data().textid);
-		
-	
-        window.location.href = "/sentenceText/getText/"+$(this).data().textid;
-				
-	
-});
 $('#comeBack').click(function() {
 
 	history.back();
 
 });
-$('#mySelect').change(function() {
+$('.mySelect').change(function() {
 
   console.log($(this).find(':selected').data());
 	
 	$.ajax({
-		url: "/sentenceText/judge/"+sentenceTextId ,
+		url: "/sentenceText/judge" ,
 		type: "PUT",
 		data: $(this).find(':selected').data(),
 		success: function(response) {
 			if(response) {
-			console.log(response);
-			document.write(response);
+			console.log("res",response);
+			
 			$('#myModal').modal("show")
 			
 			}
@@ -45,15 +30,19 @@ $('#mySelect').change(function() {
 		}
 	});
 	$.ajax({
-		url: "/sentenceText/get/"+sentenceTextId ,
-		type: "GET",
+		url: "/sentenceText/getOne" ,
+		type: "PUT",
+		data: $(this).find(':selected').data(),
 		
 		success: function(response) {
 			if(response) {
 			console.log(response);
-			if(response.userChoose){
-				$('#myErrorModal').modal("show")
+			if(response){
+				if(response.userChoose){
+					$('#myErrorModal').modal("show")
+				}
 			}
+			
 		
 
 			
@@ -65,13 +54,13 @@ $('#mySelect').change(function() {
 	});
 	
 });
-$('#report').click(function() {
+$('.report').click(function() {
 
 
 	$.ajax({
-		url: "/sentenceText/report/"+sentenceTextId ,
+		url: "/sentenceText/report" ,
 		type: "PUT",
-		
+		data: $(this).find(':selected').data(),
 		success: function(response) {
 			if(response) {
 			console.log(response);

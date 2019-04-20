@@ -2,9 +2,56 @@ extends ../layout
 block content
   
   
-    div.row.text-center.mt-5 #{TenCurrentSentenceText.length} cau
-       div.col-md-3  
-       each sentence, i in TenCurrentSentenceText
-        
-        Button.get_Text(data-textId=TenCurrentSentenceText[i]._id) Cau #{ i+1}
+    h1 #{TenCurrentSentenceText.length} câu
+    hr
+    each sentence, i in TenCurrentSentenceText
+     div
+      h5  Câu #{ i+1  } : 
+      br 
+      span #{sentence.text}
+     div.d-flex.flex-row-reverse
+      select.mySelect
+       option(value='#') 
+       option(data-textid=TenCurrentSentenceText[i]._id data-answer="yes") Tích cực
+       option(data-textid=TenCurrentSentenceText[i]._id data-answer="no" ) Tiêu cực
+      button.report.btn.btn-warning(data-textid=TenCurrentSentenceText[i]._id data-toggle='modal' data-target='#reportModal')
+        | Báo cáo  
+     hr
+    div.mt-5.d-flex.justify-content-center  
+  
+      button#comeBack.btn.btn-primary
+        i.fa.fa-arrow-circle-o-down
+        | Quay lại
+      
+    #myModal.modal.fade(role='dialog')
+      .modal-dialog 
+        .modal-content
+          .modal-header
+            h4.modal-title Thông báo          
+            button.close(type='button', data-dismiss='modal') ×
+          .modal-body
+            p Cảm ơn bạn đã phán xét
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Đóng
+    #reportModal.modal.fade(role='dialog')
+      .modal-dialog 
+        .modal-content
+          .modal-header
+            h4.modal-title Thông báo          
+            button.close(type='button', data-dismiss='modal') ×
+          .modal-body
+            p Cảm ơn bạn đã báo cáo
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Đóng   
+    #myErrorModal.modal.fade(role='dialog')
+      .modal-dialog 
+        .modal-content
+          .modal-header
+            h4.modal-title Thông báo          
+            button.close(type='button', data-dismiss='modal') ×
+          .modal-body
+            p Xin lỗi bạn đã phán xét
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Đóng        
+   
         
