@@ -270,25 +270,15 @@ app.post('/detail/:user?/:time?', sentenceController.updateDetail);
 app.get('/checkresult/:user?/:time?', sentenceController.checkresult);
 app.get('/sentence/report/:action/:target', sentenceController.report);
 
-// app.post('/sentenceText/assign', sentenceController.assignSentenceText);
-app.post('/sentenceText/create', sentenceTextController.createSentenceText);
 
+app.post('/sentenceText/create', sentenceTextController.createSentenceText);
 app.get('/sentenceText/get', sentenceTextController.get10SentenceText);
 app.put('/sentenceText/getOne', sentenceTextController.getOneSentenceText);
-app.get('/sentenceText/randomText/:sentenceTextId', homeController.textIndex);
-app.post('/sentenceText/remove', sentenceTextController.removeSentenceText);
 app.put('/sentenceText/judge', sentenceTextController.judgeSentenceText);
-app.put('/sentenceText/report/:sentenceTextId', sentenceTextController.report);
+app.put('/sentenceText/report', sentenceTextController.report);
 app.get('/sentenceText/remove', sentenceTextController.removeUserSentenceText);
 
-//app.post('/sentenceText/remove', sentenceTextController.removeSentenceText);
-// app.post('/sentenceText/upload', upload.any(), sentenceTextController.uploadSentenceText);
-// app.post('/candidate/update', userController.updateCandidate);
-// app.get('/summary/:user?/:page?', sentenceTextController.summary);
-// app.get('/detail/:user?/:time?', sentenceTextController.showDetail);
-// app.post('/detail/:user?/:time?', sentenceTextController.updateDetail);
-// app.get('/checkresult/:user?/:time?', sentenceTextController.checkresult);
-app.get('/sentenceText/report/:sentenceTextId', sentenceTextController.report);
+
 
 
 // app.get('/user/insert', userController.insertUsers);

@@ -21,14 +21,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  currentSentenceText: {
-    type: String,
-    default: ''
-  },
-  SentencesText: [{
-    type: String,
-    default: ''
-  }],
   profile: {
     name: String,
     gender: String,

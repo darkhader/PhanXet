@@ -56,11 +56,13 @@ $('.mySelect').change(function() {
 });
 $('.report').click(function() {
 
-
+	console.log($(this).data());
+	
+	
 	$.ajax({
 		url: "/sentenceText/report" ,
 		type: "PUT",
-		data: $(this).find(':selected').data(),
+		data: $(this).data(),
 		success: function(response) {
 			if(response) {
 			console.log(response);

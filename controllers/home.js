@@ -44,11 +44,7 @@ exports.index = (req, res, next) => {
             });
           }
         });
-      }
-
-
-      //hien thi trang danh gia van ban
-      
+      }     
       else {
         res.render('home/getnew', {
           title: 'Trang chủ',
@@ -62,41 +58,3 @@ exports.index = (req, res, next) => {
     });
   }
 };
-exports.textIndex = (req, res, next) => {
-  if (!req.user) {
-    return res.redirect('/login');
-  }
-  if (req.user.active) {
-  if (req.user.currentSentenceText) {
-    SentenceText.findById(req.user.currentSentenceText, (err, s) => {
-      if (err) {
-        res.render('error', {
-          title: 'Lỗi',
-          message: err
-        });
-      }
-   
-   
-      
-      if (s) {
-        res.render('home/mainText' , {
-          title: 'Trang chủ',
-          sentenceText: s,
-          id:req.user.currentSentenceText,
-          fileName: crypto.createHash('md5').update(s._id.toString() + process.env.UPLOAD_SALT).digest('hex')
-        });
-      } 
-      else {
-        res.render('home/getnew', {
-          title: 'Trang chủ',
-          userType: req.user.rank
-        });
-      }
-    });
-  }
-} else {
-  res.render('home/notactive', {
-    title: 'Trang chủ'
-  });
-}
-}
