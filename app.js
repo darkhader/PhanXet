@@ -270,7 +270,7 @@ app.post('/detail/:user?/:time?', sentenceController.updateDetail);
 app.get('/checkresult/:user?/:time?', sentenceController.checkresult);
 app.get('/sentence/report/:action/:target', sentenceController.report);
 
-
+// 3 api co the bo 
 app.post('/sentenceText/create', sentenceTextController.createSentenceText);
 app.get('/sentenceText/remove', sentenceTextController.removeUserSentenceText);
 app.put('/sentenceText/getOne', sentenceTextController.getOneSentenceText);

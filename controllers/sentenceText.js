@@ -1,6 +1,6 @@
 const SentenceText = require('../models/SentenceText');
 const User = require('../models/User');
-//tao sentenceText
+//tao sentenceText(co the bo di)
 exports.createSentenceText = (req, res) => {
     //   if (req.query && req.query.password == insertPassword) {
     if (true) {
@@ -34,11 +34,22 @@ exports.createSentenceText = (req, res) => {
 //lay sentecentext
 exports.get10SentenceText = async (req, res, next) => {
     if (req.user) {
-        try {
-            const sentenceTextFound = await SentenceText.find({ userEmail: null }).limit(10);
-            sentenceTextFound.map(text => (
-                text.userEmail = req.user.email,
-                text.save((err) => {
+        try {           
+            if(req.user.texts.length ==0){
+                const sentenceTextFound = await SentenceText.find({ userEmail: null }).limit(10);
+                sentenceTextFound.map(text => (
+                    text.userEmail = req.user.email,
+                    text.save((err) => {
+                        if (err) {
+                            res.render('error', {
+                                title: 'Lỗi',
+                                message: err
+                            })
+                        }
+                    })
+                ))
+                req.user.texts.push(sentenceTextFound);
+                req.user.save((err) => {
                     if (err) {
                         res.render('error', {
                             title: 'Lỗi',
@@ -46,19 +57,17 @@ exports.get10SentenceText = async (req, res, next) => {
                         })
                     }
                 })
-            ))
-            req.user.save((err) => {
-                if (err) {
-                    res.render('error', {
-                        title: 'Lỗi',
-                        message: err
-                    })
-                }
-            })
-            res.render('home/mainText10', {
-                title: 'Danh gia',
-                TenCurrentSentenceText: sentenceTextFound
-            })
+                res.render('home/mainText10', {
+                    title: 'Danh gia',
+                    TenCurrentSentenceText: sentenceTextFound
+                })
+            }
+            else{
+                res.render('error', {
+                    title: 'Lỗi',
+                    message: "Xin lỗi bạn đã làm rồi"
+                });
+            }
         } catch (error) {
             res.render('error', {
                 title: 'Lỗi',
@@ -70,23 +79,7 @@ exports.get10SentenceText = async (req, res, next) => {
     }
 }
 
-exports.getOneSentenceText = async (req, res, next) => {
-    const { textid } = req.body;
-    if (req.user) {
-        try {
-            const sentenceTextFound = await SentenceText.findById(textid);
-
-            res.json(sentenceTextFound);
-        } catch (error) {
-            res.render('error', {
-                title: 'Lỗi',
-                message: error
-            });
-        }
-    } else {
-        res.redirect("/login");
-    }
-}
+//xoa bo thong tin sentence de test lai(co the bo)
 exports.removeUserSentenceText = async (req, res, next) => {
     const s = await SentenceText.find({});
     s.map(s => (
@@ -150,7 +143,7 @@ exports.judgeSentenceText = async (req, res, next) => {
         res.redirect("/login");
     }
 }
-
+//report cau sai chinh ta
 exports.report = async (req, res, next) => {
     const { textid } = req.body;
     if (req.user) {
@@ -184,6 +177,7 @@ exports.report = async (req, res, next) => {
         res.redirect("/login");
     }
 }
+//khieu nai admin cham status
 exports.reportCheckresult = async (req, res, next) => {
     let {textid}=req.body;
     if (req.user) {
@@ -211,6 +205,7 @@ exports.reportCheckresult = async (req, res, next) => {
         res.redirect("/login");
     }
 }
+// kiem tra ket qua status
 exports.checkresult =async (req, res, next) => {
 const {user} = req.params;
 let sentencesText;
@@ -259,7 +254,7 @@ try {
     }
     }
 
-
+//cham diem status
 exports.summary = async (req, res, next) => {
     let sentencesText,UserText,userEmail,user;
     if (req.user) {
@@ -303,6 +298,7 @@ exports.summary = async (req, res, next) => {
         res.redirect("/login");
     }
 }
+// admin cham diem user
 exports.adminCheckSummary = async (req, res, next) => {
     const { status, textid } = req.body;
     if (req.user) {

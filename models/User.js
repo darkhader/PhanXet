@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  texts: [{
+    type: String,
+    default: ''
+  }],
   profile: {
     name: String,
     gender: String,
