@@ -277,7 +277,9 @@ app.put('/sentenceText/getOne', sentenceTextController.getOneSentenceText);
 app.put('/sentenceText/judge', sentenceTextController.judgeSentenceText);
 app.put('/sentenceText/report', sentenceTextController.report);
 app.get('/sentenceText/remove', sentenceTextController.removeUserSentenceText);
-
+app.get('/checkresultText/:user?/:time?', sentenceTextController.checkresult);
+app.get('/summaryText/:email?', sentenceTextController.summary);
+app.put('/summaryText', sentenceTextController.adminCheckSummary);
 
 
 

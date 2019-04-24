@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  script(src='/js/reportbuttons.js')
+  h3.text-center Tổng kết các câu đã kiểm tra
+  h5.text-center Tài khoản #{userEmail}
+  div
+    p Tổng số câu được kiểm tra: #{total} câu
+    p Số câu sai: #{number_of_bans} câu
+    p Số câu đúng: #{number_of_approves} câu
+    p Tỉ lệ sai: #{number_of_bans / total * 100} %
+ 

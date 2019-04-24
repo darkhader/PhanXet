@@ -1,0 +1,24 @@
+extends layout
+
+block content
+  h3.text-center Tổng kết các câu đã đọc
+  h5.text-center Tài khoản #{byUser.email}
+  if byUser.rank == 'Admin'
+    div.text-center
+      form(action='/candidate/update', method='POST')
+        input(type='hidden', name='_csrf', value=_csrf)
+        input(type='hidden', name='candidate', value=byUser.email)
+        button.btn.btn-info(type='submit', name='decision', value='select') Chọn
+        button.btn.btn-danger(type='submit', name='decision', value='discard') Loại
+  if texts   
+    each text,i in texts      
+      p #{text.text} #{text.answer} 
+        if byUser.rank == "Admin"
+          select.mySummary
+            option(value='#') 
+            option(data-textid=texts[i]._id data-status="approve") Approve
+            option(data-textid=texts[i]._id data-status="ban" ) Ban
+    hr
+  else 
+    each user,i in User
+      p #{user.email} 

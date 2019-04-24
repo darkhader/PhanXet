@@ -1,4 +1,5 @@
 const SentenceText = require('../models/SentenceText');
+const User = require('../models/User');
 //tao sentenceText
 exports.createSentenceText = (req, res) => {
     //   if (req.query && req.query.password == insertPassword) {
@@ -106,7 +107,7 @@ exports.removeUserSentenceText = async (req, res, next) => {
 }
 //danh gia sentencetext 
 exports.judgeSentenceText = async (req, res, next) => {
-    const { textid,answer } = req.body;
+    const { textid, answer } = req.body;
     if (req.user) {
         try {
             const sentenceText = await SentenceText.findByIdAndUpdate(textid);
@@ -115,7 +116,7 @@ exports.judgeSentenceText = async (req, res, next) => {
             }
             else {
                 sentenceText.picks += 1;
-                sentenceText[answer] += 1;
+                sentenceText.answer = answer;
                 sentenceText.updatedAt = new Date();
                 sentenceText.userChoose = req.user._id.toString();
                 req.user.statistics.number_of_sentenceTexts += 1;
@@ -155,14 +156,14 @@ exports.report = async (req, res, next) => {
     if (req.user) {
         try {
             const sentenceText = await SentenceText.findByIdAndUpdate(textid);
-            const userID = sentenceText.userReport.some(text => text ===req.user._id.toString())
-            if(userID){
-             
-                
+
+            if (sentenceText.userReport === req.user._id.toString()) {
+
+
                 return;
             }
-            else{
-                sentenceText.userReport.push(req.user._id.toString());
+            else {
+                sentenceText.userReport = req.user._id.toString();
                 sentenceText.save((err) => {
                     if (err) {
                         res.render('error', {
@@ -172,7 +173,7 @@ exports.report = async (req, res, next) => {
                     }
                 });
             }
-            
+
         } catch (error) {
             res.render('error', {
                 title: 'Lỗi',
@@ -180,6 +181,147 @@ exports.report = async (req, res, next) => {
             });
         }
     } else {
+        res.redirect("/login");
+    }
+}
+exports.checkresult = (req, res, next) => {
+    if (!req.user) {
+        res.render('error', {
+            title: 'Lỗi',
+            message: 'Đăng nhập đã nào'
+        });
+    } else {
+        var userEmail;
+        var timeStart, timeEnd;
+        if (!req.params.user) {
+            userEmail = req.user.email;
+        } else {
+            if (req.user.rank && req.user.rank == "Admin") {
+                userEmail = req.params.user;
+            } else if (req.user.email == req.params.user) {
+                userEmail = req.params.user;
+            } else {
+                res.render('error', {
+                    title: 'Lỗi',
+                    message: 'Bạn phải là Thu Hạnh hay Quang Khánh thì mới dùng được chức năng này :))'
+                });
+                return;
+            }
+        }
+        User.findOne({
+            email: userEmail
+        }).exec(function (err, result) {
+            if (err || !result) {
+                res.render('error', {
+                    title: 'Lỗi',
+                    message: 'Không tồn tại user cần tìm'
+                });
+                return;
+            } else {
+                var userID = result._id.toString();
+                SentenceText.aggregate().match({
+                    $and: [{
+                        userID: userID
+                    }, {
+                        $or: [{
+                            status: "ban"
+                        }, {
+                            status: "approve"
+                        }]
+                    }]
+                }).sort({
+                    updatedAt: -1
+                }).exec(function (err, result) {
+                    if (err) {
+                        res.render('error', {
+                            title: 'Lỗi',
+                            message: 'Có gì đó không đúng, thử lại sau xem sao'
+                        });
+                        return;
+                    } else {
+
+                        res.render('checkresultText', {
+                            title: 'Tổng kết',
+                            sentencesText: result,
+                            userEmail: userEmail,
+                        });
+                        return;
+                    }
+                })
+            };
+        });
+    }
+}
+exports.summary = async (req, res, next) => {
+    let sentencesText,idUserText;
+    if (req.user) {
+
+        if (req.user.rank === "Admin") {
+            if (!req.params.textid) {
+                idUserText = await SentenceText.aggregate(([{ $group: { _id: "$userID" } }]));
+              
+               
+              
+
+            }
+            else {
+                
+                sentencesText = await SentenceText.find({ userID: req.params.textid })
+                console.log("1");
+                
+            }
+
+        }
+        else {
+          
+            sentencesText = await SentenceText.find({ userID: req.user._id.toString() })
+            console.log("2");
+        }
+        
+        console.log("sentencesText ",sentencesText );
+        const userid=await  idUserText.map(userid => (
+                    userid._id
+                ))
+                const user = await User.find({ _id : { $in : userid } });
+        res.render('summaryText', {
+            title: 'Thống kê',
+            texts: sentencesText,
+            byUser: req.user,
+            User:user
+            
+        })
+    }
+    else {
+        res.redirect("/login");
+    }
+}
+exports.adminCheckSummary = async (req, res, next) => {
+    const { status, textid } = req.body;
+    if (req.user) {
+        if (req.user.rank && req.user.rank == "Admin") {
+
+            const sentencesText = await SentenceText.findById(textid)
+
+            sentencesText.status = status;
+            sentencesText.save((err) => {
+                if (err) {
+                    res.render('error', {
+                        title: 'Lỗi',
+                        message: err
+                    })
+                }
+                res.json(sentencesText)
+            });
+        }
+
+
+
+
+        else {
+            res.redirect("/login");
+        }
+    }
+    else {
         res.redirect("/login");
     }
 }

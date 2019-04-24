@@ -3,7 +3,6 @@
  * Home page.
  */
 const Sentence = require('../models/Sentence');
-const SentenceText = require('../models/SentenceText');
 const crypto = require('crypto');
 exports.index = (req, res, next) => {
   if (!req.user) {
