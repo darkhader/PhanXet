@@ -272,12 +272,14 @@ app.get('/sentence/report/:action/:target', sentenceController.report);
 
 
 app.post('/sentenceText/create', sentenceTextController.createSentenceText);
-app.get('/sentenceText/get', sentenceTextController.get10SentenceText);
+app.get('/sentenceText/remove', sentenceTextController.removeUserSentenceText);
 app.put('/sentenceText/getOne', sentenceTextController.getOneSentenceText);
+
+app.get('/sentenceText/get', sentenceTextController.get10SentenceText);
 app.put('/sentenceText/judge', sentenceTextController.judgeSentenceText);
 app.put('/sentenceText/report', sentenceTextController.report);
-app.get('/sentenceText/remove', sentenceTextController.removeUserSentenceText);
-app.get('/checkresultText/:user?/:time?', sentenceTextController.checkresult);
+app.put('/sentenceText/reportCheckresult', sentenceTextController.reportCheckresult);
+app.get('/checkresultText/:user?', sentenceTextController.checkresult);
 app.get('/summaryText/:email?', sentenceTextController.summary);
 app.put('/summaryText', sentenceTextController.adminCheckSummary);
 

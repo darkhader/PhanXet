@@ -2,7 +2,7 @@ extends layout
 
 block content
   h3.text-center Tổng kết các câu đã đọc
-  h5.text-center Tài khoản #{byUser.email}
+  h5.text-center Tài khoản #{userEmail}
   if byUser.rank == 'Admin'
     div.text-center
       form(action='/candidate/update', method='POST')
@@ -10,15 +10,30 @@ block content
         input(type='hidden', name='candidate', value=byUser.email)
         button.btn.btn-info(type='submit', name='decision', value='select') Chọn
         button.btn.btn-danger(type='submit', name='decision', value='discard') Loại
-  if texts   
-    each text,i in texts      
-      p #{text.text} #{text.answer} 
-        if byUser.rank == "Admin"
-          select.mySummary
-            option(value='#') 
-            option(data-textid=texts[i]._id data-status="approve") Approve
-            option(data-textid=texts[i]._id data-status="ban" ) Ban
+  if texts        
+    table.table.table-striped
+      thead
+        tr
+          th #
+          th Content
+          th Answer
+          if byUser.rank == "Admin"  
+            th Status
+      tbody
+      each text,i in texts
+        tr
+          td #{i + 1}
+          td #{text.text}
+          td #{text.answer}
+          td 
+            if byUser.rank == "Admin"            
+              select.mySummary
+                option(value='#') 
+                option(data-textid=texts[i]._id data-status="approve") Approve
+                option(data-textid=texts[i]._id data-status="ban" ) Ban
     hr
   else 
     each user,i in User  
-      button.emailUser(data-id= User[i]._id) #{user.email}
+      button.emailUser(data-email= User[i].email) Kiểm tra
+      p #{user.email}
+      br

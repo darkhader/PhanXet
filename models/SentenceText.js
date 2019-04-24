@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const sentenceTextSchema = new mongoose.Schema({
   text: String,
-  userID: {type:String, default:null},
+  userEmail: {type:String, default:null},
   userChoose: {type:String, default:null},
   userReport: [{type:String, default:null}],
+  userReportCheckResult:{type:Boolean, default:false},
   answer:{type:String, default:null},
   status: {type:String, default:null},
   createdAt: Date,

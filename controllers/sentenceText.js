@@ -35,9 +35,9 @@ exports.createSentenceText = (req, res) => {
 exports.get10SentenceText = async (req, res, next) => {
     if (req.user) {
         try {
-            const sentenceTextFound = await SentenceText.find({ userID: null }).limit(10);
+            const sentenceTextFound = await SentenceText.find({ userEmail: null }).limit(10);
             sentenceTextFound.map(text => (
-                text.userID = req.user._id,
+                text.userEmail = req.user.email,
                 text.save((err) => {
                     if (err) {
                         res.render('error', {
@@ -92,7 +92,7 @@ exports.removeUserSentenceText = async (req, res, next) => {
     s.map(s => (
 
         s.userChoose = null,
-        s.userID = null,
+        s.userEmail = null,
         s.save((err) => {
             if (err) {
                 res.render('error', {
@@ -184,110 +184,119 @@ exports.report = async (req, res, next) => {
         res.redirect("/login");
     }
 }
-exports.checkresult = (req, res, next) => {
-    if (!req.user) {
-        res.render('error', {
-            title: 'Lỗi',
-            message: 'Đăng nhập đã nào'
-        });
-    } else {
-        var userEmail;
-        var timeStart, timeEnd;
-        if (!req.params.user) {
-            userEmail = req.user.email;
-        } else {
-            if (req.user.rank && req.user.rank == "Admin") {
-                userEmail = req.params.user;
-            } else if (req.user.email == req.params.user) {
-                userEmail = req.params.user;
-            } else {
-                res.render('error', {
-                    title: 'Lỗi',
-                    message: 'Bạn phải là Thu Hạnh hay Quang Khánh thì mới dùng được chức năng này :))'
-                });
-                return;
-            }
-        }
-        User.findOne({
-            email: userEmail
-        }).exec(function (err, result) {
-            if (err || !result) {
-                res.render('error', {
-                    title: 'Lỗi',
-                    message: 'Không tồn tại user cần tìm'
-                });
-                return;
-            } else {
-                var userID = result._id.toString();
-                SentenceText.aggregate().match({
-                    $and: [{
-                        userID: userID
-                    }, {
-                        $or: [{
-                            status: "ban"
-                        }, {
-                            status: "approve"
-                        }]
-                    }]
-                }).sort({
-                    updatedAt: -1
-                }).exec(function (err, result) {
+exports.reportCheckresult = async (req, res, next) => {
+    let {textid}=req.body;
+    if (req.user) {
+        try {
+            const sentenceText = await SentenceText.findById(textid);
+            sentenceText.userReportCheckResult = true;
+            
+                sentenceText.save((err) => {
                     if (err) {
                         res.render('error', {
                             title: 'Lỗi',
-                            message: 'Có gì đó không đúng, thử lại sau xem sao'
-                        });
-                        return;
-                    } else {
-
-                        res.render('checkresultText', {
-                            title: 'Tổng kết',
-                            sentencesText: result,
-                            userEmail: userEmail,
-                        });
-                        return;
+                            message: err
+                        })
                     }
-                })
-            };
-        });
+                });
+            
+
+        } catch (error) {
+            res.render('error', {
+                title: 'Lỗi',
+                message: error
+            });
+        }
+    } else {
+        res.redirect("/login");
     }
 }
+exports.checkresult =async (req, res, next) => {
+const {user} = req.params;
+let sentencesText;
+
+    if(req.user){
+try {
+    if(user){
+         sentencesText= await SentenceText.aggregate().match({
+            $and: [{
+              userEmail: user
+            }, {
+              $or: [{
+                status: "ban"
+              }, {
+                status: "approve"
+              }]
+            }]
+          })
+          var count = {
+            ban: 0,
+            approve: 0
+          };
+          for (var i = 0; i < sentencesText.length; ++i) {
+            count[sentencesText[i].status]++;
+          }
+    }
+   
+   res.render('checkresultText', {
+    title: 'Kiem tra',
+    texts: sentencesText,
+    total: sentencesText.length,
+    userEmail:user,
+    number_of_bans: count.ban,
+    number_of_approves: count.approve
+     
+})
+} catch (error) {
+    res.render('error', {
+        title: 'Lỗi',
+        message: error
+    });
+}
+    }
+    else {
+        res.redirect("/login");
+    }
+    }
+
 
 exports.summary = async (req, res, next) => {
-    let sentencesText,idUserText,userid,user;
+    let sentencesText,UserText,userEmail,user;
     if (req.user) {
 
         if (req.user.rank === "Admin") {
             if (!req.params.email) {
-                idUserText = await SentenceText.aggregate(([{ $group: { _id: "$userID" } }]));
-                 userid=await  idUserText.map(userid => (
-                    userid._id
+                UserText = await SentenceText.aggregate(([{ $group: { _id: "$userEmail" } }]));
+                userEmail=await  UserText.map(useremail => (
+                    useremail._id
                 ))
-                 user = await User.find({ _id : { $in : userid } });
+                 user = await User.find({ email : { $in : userEmail } });
                
               
 
             }
             else {
                 
-                sentencesText = await SentenceText.find({ userID: req.params.email })
-                console.log("1");
+                sentencesText = await SentenceText.find({ userEmail: req.params.email })
+            
                 
             }
 
         }
         else {
           
-            sentencesText = await SentenceText.find({ userID: req.user._id.toString() })
-            console.log("2");
+            sentencesText = await SentenceText.find({ userEmail: req.user.email })
+          
         }
         
-        console.log("sentencesText ",sentencesText );
+        console.log("sentencesText",sentencesText);
+        
         res.render('summaryText', {
             title: 'Thống kê',
             texts: sentencesText,
             byUser: req.user,
-            User:user  
+            User:user,
+            userEmail: req.params.email
         })
     }
     else {

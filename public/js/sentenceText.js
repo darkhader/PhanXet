@@ -76,12 +76,30 @@ $(document).ready(() => {
 			}
 		});
 	});
+	$('.reportCheckresult').click(function () {
+
+	
+
+		$('#reportCheckModal').modal("show")
+		$.ajax({
+		 	url: "/sentenceText/reportCheckresult",
+			type: "PUT",
+			data: $(this).data(),
+			success: function (response) {
+				if (response) {
+					console.log(response);
+					
+
+
+				}
+			},
+			error: function (err) {
+				console.log(err);
+			}
+		});
+	});
 	$('.emailUser').click(function () {
-
-		console.log($(this).data().id);
-		
-
-		window.location.href = "/summaryText/" + $(this).data().id;
+		window.location.href = "/summaryText/" + $(this).data().email;
 	});
 	$('.mySummary').change(function () {
 

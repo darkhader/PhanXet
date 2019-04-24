@@ -9,4 +9,31 @@ block content
     p Số câu sai: #{number_of_bans} câu
     p Số câu đúng: #{number_of_approves} câu
     p Tỉ lệ sai: #{number_of_bans / total * 100} %
+  table.table.table-striped
+      thead
+        tr
+          th #
+          th Content
+          th Answer          
+          th Status
+          th
+      tbody
+      each text,i in texts
+        tr
+          td #{i + 1}
+          td #{text.text}
+          td #{text.answer}
+          td #{text.status}
+          td
+            button.reportCheckresult.btn.btn-warning(data-textid=texts[i]._id) Báo cáo
+  #reportCheckModal.modal.fade(role='dialog')
+      .modal-dialog 
+        .modal-content
+          .modal-header
+            h4.modal-title Thông báo          
+            button.close(type='button', data-dismiss='modal') ×
+          .modal-body
+            p Cảm ơn bạn đã báo cáo, chúng tôi sẽ kiểm tra lại
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Đóng             
  
