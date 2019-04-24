@@ -252,21 +252,25 @@ exports.checkresult = (req, res, next) => {
         });
     }
 }
+
 exports.summary = async (req, res, next) => {
-    let sentencesText,idUserText;
+    let sentencesText,idUserText,userid,user;
     if (req.user) {
 
         if (req.user.rank === "Admin") {
-            if (!req.params.textid) {
+            if (!req.params.email) {
                 idUserText = await SentenceText.aggregate(([{ $group: { _id: "$userID" } }]));
-              
+                 userid=await  idUserText.map(userid => (
+                    userid._id
+                ))
+                 user = await User.find({ _id : { $in : userid } });
                
               
 
             }
             else {
                 
-                sentencesText = await SentenceText.find({ userID: req.params.textid })
+                sentencesText = await SentenceText.find({ userID: req.params.email })
                 console.log("1");
                 
             }
@@ -279,16 +283,11 @@ exports.summary = async (req, res, next) => {
         }
         
         console.log("sentencesText ",sentencesText );
-        const userid=await  idUserText.map(userid => (
-                    userid._id
-                ))
-                const user = await User.find({ _id : { $in : userid } });
         res.render('summaryText', {
             title: 'Thống kê',
             texts: sentencesText,
             byUser: req.user,
-            User:user
-            
+            User:user  
         })
     }
     else {

@@ -76,6 +76,13 @@ $(document).ready(() => {
 			}
 		});
 	});
+	$('.emailUser').click(function () {
+
+		console.log($(this).data().id);
+		
+
+		window.location.href = "/summaryText/" + $(this).data().id;
+	});
 	$('.mySummary').change(function () {
 
 		console.log($(this).find(':selected').data());

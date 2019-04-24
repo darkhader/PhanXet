@@ -20,5 +20,5 @@ block content
             option(data-textid=texts[i]._id data-status="ban" ) Ban
     hr
   else 
-    each user,i in User
-      p #{user.email} 
+    each user,i in User  
+      button.emailUser(data-id= User[i]._id) #{user.email}
